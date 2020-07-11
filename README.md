@@ -8,6 +8,6 @@ A brainfuck interpreter written in C.
 * Cell size: 8 bits (1 byte)
 * Handles out of bounds on the tape by wrapping around
 * Additions and substrations can overflow and underflow
-* Invalid brainfuck characters are NOP
+* Invalid brainfuck characters are no-op
 
 Note that if the brainfuck program is malformed (e.g. not an equal number of `[` and `]`), the interpreter may not behave as expected.
