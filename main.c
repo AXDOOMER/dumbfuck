@@ -52,11 +52,11 @@ void interpret(struct Data* prog) {
 			case ',':
 				*prog->cell = getchar();
 				break;
-			case '[': // Call the interpreter again to handle the inner loop
+			case '[': // Calls the interpreter again to handle the inner loop
 				loop_start = ftell(prog->code);
 				loop_depth = 0;
 
-				// Handle loop when condition is false (find the matching ']' for '[')
+				// Handle loop when condition is false (find the matching ']')
 				if (!*prog->cell) {
 					while (1) {
 						if (read_char(&ch, prog->code))
@@ -76,11 +76,12 @@ void interpret(struct Data* prog) {
 				while (*prog->cell) {
 					// Set code pointer to beginning of loop
 					fseek(prog->code, loop_start, SEEK_SET);
-					interpret(prog);
+					interpret(prog); // Call the interpreter again
 				}
 
 				break;
 			case ']':
+				// Done. Return from recursive 'interpret' call.
 				return;
 
 		}//end switch
