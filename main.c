@@ -17,7 +17,7 @@ int read_char(char* ch, FILE* code) {
 	return feof(code);
 }
 
-void interpret(struct Data* prog, int stack_height) {
+void interpret(struct Data* prog) {
 
 	while (1) {
 		int loop_start;
@@ -56,7 +56,7 @@ void interpret(struct Data* prog, int stack_height) {
 				loop_start = ftell(prog->code);
 				loop_depth = 0;
 
-				// Handle loop when condition is false
+				// Handle loop when condition is false (find the matching ']' for '[')
 				if (!*prog->cell) {
 					while (1) {
 						if (read_char(&ch, prog->code))
@@ -72,11 +72,11 @@ void interpret(struct Data* prog, int stack_height) {
 					}
 				}
 
-				// Handle loop when condition is true
+				// Handle loop when condition is true (interpret the inside of the loop)
 				while (*prog->cell) {
 					// Set code pointer to beginning of loop
 					fseek(prog->code, loop_start, SEEK_SET);
-					interpret(prog, stack_height + 1);
+					interpret(prog);
 				}
 
 				break;
@@ -90,6 +90,9 @@ void interpret(struct Data* prog, int stack_height) {
 int main(int argc, char* argv[]) {
 	struct Data prog = { .tape = {0}, .cell = prog.tape, .code = NULL};
 
+	// Disable buffered output (always flush)
+	setvbuf(stdout, NULL, _IONBF, 0);
+
 	if (argc > 1) {
 		prog.code = fopen(argv[1], "r");
 
@@ -98,7 +101,7 @@ int main(int argc, char* argv[]) {
 			return 1;
 		}
 
-		interpret(&prog, 0);
+		interpret(&prog);
 
 		fclose(prog.code);
 	}
